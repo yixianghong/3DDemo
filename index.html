@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        background: url(./IMG_3664.jpg) no-repeat center center;
+        background-size: cover;
+      }
+    </style>
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+      }
+
+      #canvasWrap {
+        position: relative;
+      }
+
+      #control {
+        display: flex;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: white;
+      }
+
+      #control div {
+        cursor: pointer;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvasWrap">
+      <div id="control">
+        <div class="goBefore">前</div>
+        <div class="goAfter">後</div>
+        <div class="goLeft">左</div>
+        <div class="goRight">右</div>
+        <div class="reset">復原</div>
+      </div>
+    </div>
+    <script src="./three.js"></script>
+    <script>
+      document
+        .getElementsByClassName("goBefore")[0]
+        .addEventListener("click", () => {
+          camera.position.z -= 1;
+        });
+      document
+        .getElementsByClassName("goAfter")[0]
+        .addEventListener("click", () => {
+          camera.position.z += 1;
+        });
+      document
+        .getElementsByClassName("goLeft")[0]
+        .addEventListener("click", () => {
+          camera.position.x += 1;
+        });
+      document
+        .getElementsByClassName("goRight")[0]
+        .addEventListener("click", () => {
+          camera.position.x -= 1;
+        });
+
+      document
+        .getElementsByClassName("reset")[0]
+        .addEventListener("click", () => {
+          camera.position.z = 5;
+          camera.position.x = 0;
+          camera.position.y = 0;
+        });
+
+      //建立場景
+      const scene = new THREE.Scene();
+
+      //攝影機
+      // 參數1. 垂直相機的視野, 在視野以外的東西不會被選染製畫面
+      // 參數2. 相機可以看到的視野外觀比例，注意它是一個寬除高的值
+      // 參數3. 接近相機的平片, 當物件比此值更靠近畫面時, 該物件不被渲染
+      // 參數4. 遠相機的平面, 當物件與相機的距離大於此值時, 該物件不被渲染
+      camera = new THREE.PerspectiveCamera(
+        30,
+        window.innerWidth / window.innerHeight,
+        1,
+        10000
+      );
+
+      //相機的xyz軸
+
+      camera.position.z = 20;
+      camera.position.x = 0;
+      camera.position.y = 0;
+
+      //設置背景
+      //   const loader = new THREE.TextureLoader();
+      //   const bgTexture = loader.load("IMG_3664.jpg");
+      //   scene.background = bgTexture;
+
+      // 設置平行光 DirectionalLight
+      let directionalLight = new THREE.DirectionalLight(0xeeff00);
+      directionalLight.position.set(-10, 20, 20);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+      let directionalLightHelper = new THREE.DirectionalLightHelper(
+        directionalLight
+      );
+
+      //呼叫 renderer.render 繪製場景
+      const canvas = document.getElementsByTagName("canvas")[0];
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.getElementById("canvasWrap").appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1)
+        const material = new THREE.MeshLambertMaterial({ color: 0xf29035 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // const loader = new THREE.FontLoader();
+      // loader.load("gentilis_bold.typeface.json", function (font) {
+      //   const geometry = new THREE.TextGeometry("Hello I'm JASON", {
+      //     font: font,
+      //     size: 1,
+      //     height: 1,
+      //   });
+      //   const material = new THREE.MeshLambertMaterial({ color: 0xf29035 });
+      //   const cube = new THREE.Mesh(geometry, material);
+      //   scene.add(cube);
+
+      //   function animate() {
+      //     requestAnimationFrame(animate);
+      //     cube.rotation.x += 0.01;
+      //     cube.rotation.y -= 0.01;
+      //     renderer.render(scene, camera);
+      //   }
+      //   animate();
+      // });
+
+      window.addEventListener("resize", function () {
+        var WIDTH = window.innerWidth,
+          HEIGHT = window.innerHeight;
+        renderer.setSize(WIDTH, HEIGHT);
+        camera.aspect = WIDTH / HEIGHT;
+        camera.updateProjectionMatrix();
+      });
+
+      
+    </script>
+  </body>
+</html>
